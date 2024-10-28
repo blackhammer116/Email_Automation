@@ -75,7 +75,7 @@ def SendEmail():
     """
     msg = Message('Nova ',
                        sender='NoReply@gmail.com',
-                       recipients=["hiyabunebiyu2@gmail.com"])
+                       recipients=[''])
     msg.body = f"Dear someone This email was sent from Ic_labs."
     msg.html = f"<h1>Your Score for the week is</h1><p>.</p>"
     mail.send(msg)

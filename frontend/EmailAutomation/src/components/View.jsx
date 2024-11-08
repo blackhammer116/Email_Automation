@@ -10,6 +10,7 @@ import {
     TableHeaderCell,
     TableRow,
   } from '@tremor/react';
+import DialogPopup from './DialogPopup';
   
 //   const data = [
 //     {
@@ -71,6 +72,11 @@ import {
   export default function ViewInterns() {
 
     const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState();
+    const [status, setStatus] = useState();
+    const [error, setError] = useState();
+    const [successMessage, setSuccessMessage] = useState();
+    const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
     const fetchData = async () => {
@@ -86,20 +92,35 @@ import {
 
     const sendEmail = async () => {
         try {
+            setIsLoading(true)
             const response = await axios.post('http://localhost:5000/send_email');
-            console.log(response)
-            if (response.status == 200) {
-                
-                return(<>
-                    <script >
-                        alert("Email sent successfuly!!");
-                    </script>
-                </>)
+            if (response.status===200) {
+              console.log(response);
+              setSuccessMessage('Email sent successfully!');
+              setStatus(true);
+              setShowPopup(true);
+              // <DialogPopup message='Email sent successfully!' />
             }
-        } catch (error) {
-            console.error('Error sending email: ', error);
-        }
-    }
+            else {
+              // Handle non-200 status codes
+              setError('Email sending failed. Status code: ' + response.status);
+              <DialogPopup message='Email sending failed!!' onClose={() => setShowPopup(false)}/>
+              console.log(error)
+          }
+          } catch (error) {
+              // More informative error handling
+              setError('Error sending email: ' + (error.response ? error.response.data : error.message));
+              console.log(error)
+          } finally {
+              // Always hide the loading indicator
+              setIsLoading(false);
+          }
+    };
+
+    const handleSubmit =  async (e) => {
+      e.preventDefault();
+      await sendEmail();
+    };
 
     return (
       <>
@@ -113,12 +134,19 @@ import {
             </p>
           </div>
           <button
-            type="button"
+            type="submit"
+            // onSubmit={handleSubmit()}
             className="mt-4 w-full whitespace-nowrap rounded-tremor-small bg-tremor-brand px-4 py-2.5 text-tremor-default font-medium text-tremor-brand-inverted shadow-tremor-input hover:bg-tremor-brand-emphasis dark:bg-dark-tremor-brand dark:text-dark-tremor-brand-inverted dark:shadow-dark-tremor-input dark:hover:bg-dark-tremor-brand-emphasis sm:mt-0 sm:w-fit"
-            onClick={sendEmail()}
+            onClick={sendEmail}
           >
-            Send Email
+            {isLoading ? 'Sending...' : 'Send Email'}
           </button>
+           
+          <p>
+            {
+              showPopup ? <DialogPopup message="Email Sent Successfuly!" /> : ''
+          }
+          </p>
         </div>
         <Table className="mt-8">
           <TableHead>

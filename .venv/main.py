@@ -52,6 +52,7 @@ def SendEmail():
     try:
         interns = get_data()
         for i in interns:
+            # if i["email"] != "test@gmail.com":
             msg = Message('Nova ',
                         sender="Noreply@gmail.com",
                         recipients=[i["email"]])
@@ -60,7 +61,7 @@ def SendEmail():
             <h1>Dear {i['name']} This email was sent from Icog Labs</h1>
             <h3>Your Score for the week is</h3><p>{i['results']}.</p>"""
             mail.send(msg)
-            print(msg)
+            print(msg.body)
 
         return {"status": True}
     except:
@@ -81,4 +82,4 @@ print(msg)
  
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run( debug=True)
